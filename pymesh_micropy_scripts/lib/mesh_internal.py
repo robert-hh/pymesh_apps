@@ -200,8 +200,8 @@ class MeshInternal:
     def process(self):
         self.mesh.update_internals()
         self.mesh.led_state()
-        print("%d: MAC %s, State %s, Single %s" % (time.time(),
-            hex(self.MAC), self.mesh.state_string(), str(self.mesh.mesh.single())))
+        print("%d: MAC %s(%d), State %s, Single %s" % (time.time(),
+            hex(self.MAC), self.MAC, self.mesh.state_string(), str(self.mesh.mesh.single())))
         print(self.mesh.ipaddr())
         leader = self.mesh.mesh.leader()
         if leader is not None:

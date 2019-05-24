@@ -359,7 +359,7 @@ def on_rcv_ack(message):
     print("%d =================  ACK RECEIVED :) :) :) "%time.ticks_ms())
 mesh.meshaging.on_rcv_ack = on_rcv_ack
 
-ble_comm = ble.BleCommunication(mesh.mesh.mesh.MAC)
+ble_comm = ble.BleCommunication(str(mesh.mesh.mesh.mac_short))
 
 def ble_on_disconnect():
     rpc_handler = RPCHandler(rx_worker, tx_worker, mesh, ble_comm)
@@ -374,7 +374,7 @@ Gps.init_static()
 
 kill_all = False
 deepsleep_timeout = 0
-
+new_lora_mac = None
 watchdog = Watchdog(meshaging, mesh)
 
 def deepsleep_now():
@@ -386,16 +386,24 @@ def deepsleep_now():
     Gps.terminate()
     mesh.statistics.save_all()
     print('Cleanup code, all Alarms cb should be stopped')
+    if new_lora_mac:
+        fo = open("/flash/sys/lpwan.mac", "wb")
+        mac_write=bytes([0, 0, 0, 0, 0, 0, (new_lora_mac >> 8) & 0xFF, new_lora_mac & 0xFF])
+        fo.write(mac_write)
+        fo.close()
+        print("Really LoRa MAC set to", new_lora_mac)
     if deepsleep_timeout > 0:
         print('Going to deepsleep for %d seconds'%deepsleep_timeout)
         time.sleep(1)
         machine.deepsleep(deepsleep_timeout * 1000)
 
-def deepsleep_init(timeout):
-    """ initializes an deeppsleep sequence, that will be performed later """
-    global deepsleep_timeout, kill_all
+def deepsleep_init(timeout, new_MAC = None):
+    """ initializes an deep-sleep sequence, that will be performed later """
+    global deepsleep_timeout, kill_all, new_lora_mac
     deepsleep_timeout = timeout
     kill_all = True
+    if new_MAC:
+        new_lora_mac = new_MAC
     return
 
 mesh.statistics.sleep_function = deepsleep_init

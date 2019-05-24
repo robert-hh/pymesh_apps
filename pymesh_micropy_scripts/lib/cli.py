@@ -41,7 +41,16 @@ class Cli:
             #     self.rpc_handler = RPCHandler(rx_worker, tx_worker, mesh, ble_comm)
 
             if cmd == 'mac':
-                print(self.mesh.mesh.mesh.MAC)
+                # read/write LoRa MAC address
+                try:
+                    id = int(input('(new LoRa MAC (0-64k) [Enter for read])<'))
+                except:
+                    print(self.mesh.mesh.mesh.MAC)
+                    continue
+                id = id & 0xFFFF # just 2B value
+                # it's actually set in main.py (main thread)
+                print("LoRa MAC set to", id)
+                self.sleep(1, id) # force restart
 
             elif cmd == 'mml':
                 mesh_mac_list = self.rpc_handler.get_mesh_mac_list()
