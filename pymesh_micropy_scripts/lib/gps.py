@@ -12,8 +12,8 @@ __version__ = '1'
 """
 
 import time
-from pytrack import Pytrack
-from L76GNSS import L76GNSS
+# from pytrack import Pytrack
+# from L76GNSS import L76GNSS
 from machine import Timer
 
 class Gps:
@@ -30,8 +30,8 @@ class Gps:
         dlat = str(type(latitude))
         dlon = str(type(longitude))
         if dlat == dlon == "<class 'float'>":
-            Gps.lon = longitude
             Gps.lat = latitude
+            Gps.lon = longitude            
             is_set = True
         else:
             print("Error parsing ", latitude, longitude)
@@ -40,36 +40,36 @@ class Gps:
     def get_location():
         return (Gps.lat, Gps.lon)
 
-    @staticmethod
-    def init_static():
-        is_pytrack = True
-        try:
-            py = Pytrack()
-            Gps.l76 = L76GNSS(py, timeout=30)
-            #l76.coordinates()
-            Gps._timer = Timer.Alarm(Gps.gps_periodic, 30, periodic=True)
-            print("Pytrack detected")
-        except:
-            is_pytrack = False
-            print("Pytrack NOT detected")
-        #TODO: how to check if GPS is conencted
-        return is_pytrack
+    # @staticmethod
+    # def init_static():
+    #     is_pytrack = True
+    #     try:
+    #         py = Pytrack()
+    #         Gps.l76 = L76GNSS(py, timeout=30)
+    #         #l76.coordinates()
+    #         Gps._timer = Timer.Alarm(Gps.gps_periodic, 30, periodic=True)
+    #         print("Pytrack detected")
+    #     except:
+    #         is_pytrack = False
+    #         print("Pytrack NOT detected")
+    #     #TODO: how to check if GPS is conencted
+    #     return is_pytrack
 
-    @staticmethod
-    def gps_periodic(alarm):
-        t0 = time.ticks_ms()
-        coord = Gps.l76.coordinates()
-        if coord[0] != None:
-            Gps.lat, Gps.lon = coord
-            print("New coord ", coord)
-        dt = time.ticks_ms() - t0
-        print(" =====>>>> gps_periodic ", dt)
+    # @staticmethod
+    # def gps_periodic(alarm):
+    #     t0 = time.ticks_ms()
+    #     coord = Gps.l76.coordinates()
+    #     if coord[0] != None:
+    #         Gps.lat, Gps.lon = coord
+    #         print("New coord ", coord)
+    #     dt = time.ticks_ms() - t0
+    #     print(" =====>>>> gps_periodic ", dt)
 
-    @staticmethod
-    def terminate():
-        if Gps._timer is not None:
-            Gps._timer.cancel()
-        pass
+    # @staticmethod
+    # def terminate():
+    #     if Gps._timer is not None:
+    #         Gps._timer.cancel()
+    #     pass
 
 """
 from pytrack import Pytrack
